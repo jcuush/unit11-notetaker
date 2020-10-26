@@ -35,6 +35,46 @@ app.get("/api/notes", function (req, res) {
         }
     })
 });
+// posts user input
+
+app.post("/api/notes", function(req, res) {
+    fs.readFile("./db/db.json", "utf8", function (err, data) {
+        console.log(req.body);
+
+        let previousNote = JSON.parse(data);
+        req.body.id = previousNote.length +1;
+        previousNote.push(req.body);
+
+        fs.writeFile("./db/db.json", JSON.stringify(previousNote), function(err) {
+            console.log(err);
+            res.json(previousNote);
+        })
+    })
+});
+
+app.delete("/api/notes/:id", function(req, res) {
+    fs.readFile("./db/db.json", "utf8", function(error, data) {
+    console.log(req.params);
+    let previousNote = JSON.parse(data);
+
+    console.log(previousNote);
+
+    var newNote = [];
+
+    for(let i = 0; i < previousNote.length; i++) {
+        if(parseInt(req.params.id) !== previousNote[i].id) {
+            newNote.push(previousNote[i]);
+        }
+    }
+
+    fs.writeFile("./db/db.json", JSON.stringify(newNote), function (error) {
+        console.log(error);
+        res.json(newNote);
+    })
+})
+});
+
+
 
 // Server begins to listen
 app.listen(PORT, function() {
